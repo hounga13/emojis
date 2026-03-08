@@ -30,7 +30,9 @@
     <header class="header">
         <div class="header-content">
             <div class="header-top">
-                <h1 class="logo" id="siteTitle">✨ Emojis</h1>
+                <a href="./" class="logo-link" id="logoLink">
+                    <h1 class="logo" id="siteTitle">✨ Emojis</h1>
+                </a>
                 <div class="lang-selector">
                     <button id="langBtn" class="lang-btn" aria-label="Language">🌐</button>
                     <div id="langDropdown" class="lang-dropdown hidden">
@@ -42,6 +44,7 @@
                 <input type="text" id="searchInput" placeholder="이모지 검색 (예: 웃음, 사과, 강아지...)" autocomplete="off">
                 <button aria-label="검색 지우기" id="clearSearch">&times;</button>
             </div>
+            <p class="usage-hint" id="usageHint">🔍 검색하고 👆 클릭하면 바로 복사!</p>
         </div>
     </header>
 

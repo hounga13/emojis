@@ -107,6 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // 사용법 안내
+        const usageHint = document.getElementById('usageHint');
+        if (usageHint) usageHint.textContent = t('usageHint');
+
         // 푸터
         document.getElementById('footerText').textContent = t('footer');
     }

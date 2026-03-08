@@ -58,6 +58,26 @@ body {
     user-select: none;
 }
 
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s;
+}
+
+.logo-link:hover {
+    opacity: 0.8;
+}
+
+.usage-hint {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #636e72;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    opacity: 0.85;
+    letter-spacing: 0.3px;
+}
+
 /* === 언어 선택기 === */
 .lang-selector {
     position: relative;
