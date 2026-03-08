@@ -5,30 +5,117 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryNav = document.getElementById('categoryList');
     const toast = document.getElementById('toast');
 
-    // 카테고리별 이름 매핑
-    const categoryNames = {
-        'recent': '최근 사용 🕒',
-        'smileys': '스마일리 & 사람 😀',
-        'animals': '동물 & 자연 🐶',
-        'food': '음식 & 음료 🍔',
-        'activities': '활동 ⚽️',
-        'travel': '여행 & 장소 ✈️',
-        'objects': '사물 💡',
-        'symbols': '기호 ❤️',
-        'flags': '깃발 🏳️'
+    // i18n 초기화
+    window.currentLang = detectLanguage();
+    setLanguage(window.currentLang);
+
+    // 카테고리 키 → 번역 키 매핑
+    const categoryGroupKeys = {
+        'recent': 'groupRecent',
+        'smileys': 'groupSmileys',
+        'animals': 'groupAnimals',
+        'food': 'groupFood',
+        'activities': 'groupActivities',
+        'travel': 'groupTravel',
+        'objects': 'groupObjects',
+        'symbols': 'groupSymbols',
+        'flags': 'groupFlags'
+    };
+
+    const categoryTabKeys = {
+        'all': 'catAll',
+        'recent': 'catRecent',
+        'smileys': 'catSmileys',
+        'animals': 'catAnimals',
+        'food': 'catFood',
+        'activities': 'catActivities',
+        'travel': 'catTravel',
+        'objects': 'catObjects',
+        'symbols': 'catSymbols',
+        'flags': 'catFlags'
     };
 
     let recentEmojis = JSON.parse(localStorage.getItem('recentEmojis')) || [];
 
+    // 언어 선택기 초기화
+    initLangSelector();
+
+    // UI 텍스트 적용
+    applyUITranslations();
+
     // 초기 렌더링
     renderEmojis('all');
+
+    // 언어 선택기 구성
+    function initLangSelector() {
+        const langBtn = document.getElementById('langBtn');
+        const langDropdown = document.getElementById('langDropdown');
+
+        // 드롭다운 항목 생성
+        langDropdown.innerHTML = '';
+        SUPPORTED_LANGS.forEach(lang => {
+            const item = document.createElement('div');
+            item.className = 'lang-item' + (lang === window.currentLang ? ' active' : '');
+            item.textContent = LANG_NAMES[lang];
+            item.setAttribute('data-lang', lang);
+            item.addEventListener('click', () => {
+                setLanguage(lang);
+                window.currentLang = lang;
+                langDropdown.classList.add('hidden');
+                applyUITranslations();
+                // 현재 탭 유지하며 재렌더링
+                const activeTab = document.querySelector('#categoryList li.active');
+                const activeCat = activeTab ? activeTab.getAttribute('data-category') : 'all';
+                renderEmojis(activeCat);
+                // 드롭다운 active 상태 업데이트
+                langDropdown.querySelectorAll('.lang-item').forEach(el => {
+                    el.classList.toggle('active', el.getAttribute('data-lang') === lang);
+                });
+            });
+            langDropdown.appendChild(item);
+        });
+
+        // 토글
+        langBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdown.classList.toggle('hidden');
+        });
+
+        // 바깥 클릭 시 닫기
+        document.addEventListener('click', () => {
+            langDropdown.classList.add('hidden');
+        });
+        langDropdown.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    // 모든 UI 텍스트를 현재 언어로 적용
+    function applyUITranslations() {
+        // 페이지 제목
+        document.title = t('pageTitle');
+        document.getElementById('siteTitle').textContent = t('siteTitle');
+        document.querySelector('meta[name="description"]').setAttribute('content', t('metaDesc'));
+
+        // 검색 플레이스홀더
+        searchInput.placeholder = t('searchPlaceholder');
+
+        // 카테고리 탭 텍스트 업데이트
+        const tabs = categoryNav.querySelectorAll('li');
+        tabs.forEach(tab => {
+            const cat = tab.getAttribute('data-category');
+            if (categoryTabKeys[cat]) {
+                tab.textContent = t(categoryTabKeys[cat]);
+            }
+        });
+
+        // 푸터
+        document.getElementById('footerText').textContent = t('footer');
+    }
 
     // 검색 이벤트
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
         clearBtn.style.display = query ? 'block' : 'none';
 
-        // 검색 중에는 카테고리 탭 선택을 해제
         if (query) {
             document.querySelectorAll('#categoryList li').forEach(li => li.classList.remove('active'));
             renderEmojis('search', query);
@@ -77,33 +164,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (filter === 'recent') {
             if (!hasResults) {
-                container.innerHTML = '<div class="empty-state">최근에 사용한 이모지가 없습니다. 👀</div>';
+                container.innerHTML = `<div class="empty-state">${t('noRecent')}</div>`;
             }
             return;
         }
 
         // 전체 혹은 특정 카테고리 필터링
-        const categories = filter === 'all' ? Object.keys(categoryNames).filter(c => c !== 'recent') : [filter];
+        const allCatKeys = Object.keys(categoryGroupKeys).filter(c => c !== 'recent');
+        const categories = filter === 'all' ? allCatKeys : [filter];
 
         categories.forEach(cat => {
             let filteredList = emojiData.filter(item => item.category === cat);
 
-            if (query) { // 검색어 필터링
+            if (query) {
                 filteredList = emojiData.filter(item =>
                     item.keywords.some(kw => kw.toLowerCase().includes(query))
                 );
-                // 카테고리 루프 한 번만 돌면 됨 (검색 시 전체 렌더링)
                 if (cat !== categories[0]) return;
             }
 
             if (filteredList.length > 0) {
                 hasResults = true;
-                appendEmojiGroup(query ? '검색 결과 🔍' : cat, filteredList);
+                appendEmojiGroup(query ? '_search' : cat, filteredList);
             }
         });
 
         if (!hasResults) {
-            container.innerHTML = '<div class="empty-state">검색 결과가 없습니다. 😢</div>';
+            container.innerHTML = `<div class="empty-state">${t('noResults')}</div>`;
         }
     }
 
@@ -113,7 +200,13 @@ document.addEventListener('DOMContentLoaded', () => {
         groupDiv.className = 'emoji-group';
 
         const title = document.createElement('h2');
-        title.textContent = categoryNames[categoryKey] || categoryKey;
+        if (categoryKey === '_search') {
+            title.textContent = t('searchResults');
+        } else if (categoryGroupKeys[categoryKey]) {
+            title.textContent = t(categoryGroupKeys[categoryKey]);
+        } else {
+            title.textContent = categoryKey;
+        }
         groupDiv.appendChild(title);
 
         const gridDiv = document.createElement('div');
@@ -123,9 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const el = document.createElement('div');
             el.className = 'emoji-item';
             el.textContent = item.emoji;
-            el.title = item.keywords ? item.keywords.join(', ') : '이모지';
+            el.title = item.keywords ? item.keywords.join(', ') : 'emoji';
 
-            // 복사 클릭 이벤트
             el.addEventListener('click', () => copyToClipboard(item.emoji));
 
             gridDiv.appendChild(el);
@@ -135,22 +227,21 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(groupDiv);
     }
 
-    // 클립보드 복사 및 토스트 알림, 최근 이모지 저장
+    // 클립보드 복사 및 토스트 알림
     async function copyToClipboard(emoji) {
         try {
             await navigator.clipboard.writeText(emoji);
-            showToast(`${emoji} 복사됨!`);
+            showToast(`${emoji} ${t('copied')}`);
             saveRecentEmoji(emoji);
         } catch (err) {
             console.error('Failed to copy: ', err);
-            // Fallback for older browsers
             const textArea = document.createElement("textarea");
             textArea.value = emoji;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand("copy");
             document.body.removeChild(textArea);
-            showToast(`${emoji} 복사됨!`);
+            showToast(`${emoji} ${t('copied')}`);
             saveRecentEmoji(emoji);
         }
     }
@@ -159,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.textContent = message;
         toast.classList.add('show');
 
-        // 기존 타이머 취소
         if (window.toastTimer) clearTimeout(window.toastTimer);
 
         window.toastTimer = setTimeout(() => {
@@ -168,22 +258,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveRecentEmoji(emoji) {
-        // 이미 있으면 제거 후 맨 앞에 추가
         recentEmojis = recentEmojis.filter(e => e !== emoji);
         recentEmojis.unshift(emoji);
 
-        // 최대 20개까지만 저장
         if (recentEmojis.length > 20) {
             recentEmojis.pop();
         }
 
         localStorage.setItem('recentEmojis', JSON.stringify(recentEmojis));
 
-        // '최근 사용' 탭 혹은 '전체' 탭을 보고 있다면 화면 갱신
-        const activeTab = document.querySelector('#categoryList li.active').getAttribute('data-category');
-        if (activeTab === 'recent') {
+        const activeTab = document.querySelector('#categoryList li.active');
+        const activeCat = activeTab ? activeTab.getAttribute('data-category') : 'all';
+        if (activeCat === 'recent') {
             renderEmojis('recent');
-        } else if (activeTab === 'all' && !searchInput.value) {
+        } else if (activeCat === 'all' && !searchInput.value) {
             renderEmojis('all');
         }
     }
