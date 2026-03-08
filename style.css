@@ -1,0 +1,237 @@
+:root {
+    --bg-color: #f8f9fa;
+    --text-color: #2d3436;
+    --header-bg: rgba(255, 255, 255, 0.85);
+    --card-bg: #ffffff;
+    --primary: #6c5ce7;
+    --primary-hover: #5b4bc4;
+    --emoji-hover-bg: #f1f2f6;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --border-radius: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.5rem 1rem;
+}
+
+.header-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+    user-select: none;
+}
+
+.search-container {
+    position: relative;
+    width: 100%;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 1rem 3rem 1rem 1.5rem;
+    font-size: 1.1rem;
+    border: 2px solid transparent;
+    border-radius: 50px;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+#searchInput:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+}
+
+#clearSearch {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    display: none;
+}
+
+#clearSearch:hover {
+    color: var(--text-color);
+}
+
+.main-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.ad-placeholder {
+    width: 100%;
+    background-color: #e9ecef;
+    border: 2px dashed #ced4da;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    padding: 2rem;
+}
+
+.category-nav {
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.category-nav::-webkit-scrollbar {
+    display: none;
+}
+
+#categoryList {
+    list-style: none;
+    display: flex;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+#categoryList li {
+    padding: 0.6rem 1.2rem;
+    background-color: var(--card-bg);
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+    user-select: none;
+}
+
+#categoryList li:hover {
+    background-color: var(--emoji-hover-bg);
+}
+
+#categoryList li.active {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+.emoji-group {
+    margin-bottom: 2rem;
+}
+
+.emoji-group h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+    color: #555;
+}
+
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.5rem;
+}
+
+.emoji-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    height: 60px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s;
+    user-select: none;
+}
+
+.emoji-item:hover {
+    transform: scale(1.2);
+    background-color: var(--emoji-hover-bg);
+    z-index: 10;
+}
+
+.emoji-item:active {
+    transform: scale(0.95);
+}
+
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background-color: #2d3436;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s;
+    opacity: 0;
+    z-index: 1000;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.footer {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #a4b0be;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #636e72;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 600px) {
+    .header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .emoji-item {
+        font-size: 1.8rem;
+        height: 50px;
+    }
+}
