@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'activities': '활동 ⚽️',
         'travel': '여행 & 장소 ✈️',
         'objects': '사물 💡',
-        'symbols': '기호 ❤️'
+        'symbols': '기호 ❤️',
+        'flags': '깃발 🏳️'
     };
 
     let recentEmojis = JSON.parse(localStorage.getItem('recentEmojis')) || [];
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
         clearBtn.style.display = query ? 'block' : 'none';
-        
+
         // 검색 중에는 카테고리 탭 선택을 해제
         if (query) {
             document.querySelectorAll('#categoryList li').forEach(li => li.classList.remove('active'));
@@ -52,10 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.tagName === 'LI') {
             document.querySelectorAll('#categoryList li').forEach(li => li.classList.remove('active'));
             e.target.classList.add('active');
-            
+
             searchInput.value = '';
             clearBtn.style.display = 'none';
-            
+
             const category = e.target.getAttribute('data-category');
             renderEmojis(category);
         }
@@ -87,11 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let filteredList = emojiData.filter(item => item.category === cat);
 
             if (query) { // 검색어 필터링
-                filteredList = emojiData.filter(item => 
+                filteredList = emojiData.filter(item =>
                     item.keywords.some(kw => kw.toLowerCase().includes(query))
                 );
                 // 카테고리 루프 한 번만 돌면 됨 (검색 시 전체 렌더링)
-                if (cat !== categories[0]) return; 
+                if (cat !== categories[0]) return;
             }
 
             if (filteredList.length > 0) {
@@ -109,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function appendEmojiGroup(categoryKey, list) {
         const groupDiv = document.createElement('div');
         groupDiv.className = 'emoji-group';
-        
+
         const title = document.createElement('h2');
         title.textContent = categoryNames[categoryKey] || categoryKey;
         groupDiv.appendChild(title);
@@ -122,10 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
             el.className = 'emoji-item';
             el.textContent = item.emoji;
             el.title = item.keywords ? item.keywords.join(', ') : '이모지';
-            
+
             // 복사 클릭 이벤트
             el.addEventListener('click', () => copyToClipboard(item.emoji));
-            
+
             gridDiv.appendChild(el);
         });
 
@@ -156,10 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function showToast(message) {
         toast.textContent = message;
         toast.classList.add('show');
-        
+
         // 기존 타이머 취소
         if (window.toastTimer) clearTimeout(window.toastTimer);
-        
+
         window.toastTimer = setTimeout(() => {
             toast.classList.remove('show');
         }, 2000);
@@ -169,14 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // 이미 있으면 제거 후 맨 앞에 추가
         recentEmojis = recentEmojis.filter(e => e !== emoji);
         recentEmojis.unshift(emoji);
-        
+
         // 최대 20개까지만 저장
         if (recentEmojis.length > 20) {
             recentEmojis.pop();
         }
-        
+
         localStorage.setItem('recentEmojis', JSON.stringify(recentEmojis));
-        
+
         // '최근 사용' 탭 혹은 '전체' 탭을 보고 있다면 화면 갱신
         const activeTab = document.querySelector('#categoryList li.active').getAttribute('data-category');
         if (activeTab === 'recent') {
