@@ -31,11 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // 검색 중에는 카테고리 탭 선택을 해제
         if (query) {
             document.querySelectorAll('#categoryList li').forEach(li => li.classList.remove('active'));
+            renderEmojis('search', query);
         } else {
+            document.querySelectorAll('#categoryList li').forEach(li => li.classList.remove('active'));
             document.querySelector('[data-category="all"]').classList.add('active');
+            renderEmojis('all');
         }
-
-        renderEmojis('search', query);
     });
 
     // 검색창 지우기
