@@ -204,16 +204,10 @@ body {
 
 .ad-placeholder {
     width: 100%;
-    background-color: #e9ecef;
-    border: 2px dashed #ced4da;
-    border-radius: var(--border-radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6c757d;
-    font-weight: 600;
     margin-bottom: 2rem;
-    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .category-nav {
